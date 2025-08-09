@@ -77,7 +77,9 @@ services:
     environment:
       - NODE_ENV=${NODE_ENV:-development}
       - PORT=${API_PORT:-3001}
+      - POSTGRES_HOST=postgres
       - POSTGRES_URL=${POSTGRES_URL}
+      - REDIS_HOST=redis
       - REDIS_URL=${REDIS_URL}
       - JWT_SECRET=${JWT_SECRET}
       - SESSION_SECRET=${SESSION_SECRET}
