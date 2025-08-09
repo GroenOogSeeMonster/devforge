@@ -18,6 +18,7 @@ import { useForm } from '@mantine/form';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { useNotifications } from '../../hooks/useNotifications';
+import { AuthLayout } from '../Layout/AuthLayout';
 
 interface LoginFormValues {
   email: string;
@@ -81,63 +82,55 @@ export function LoginForm() {
   };
 
   return (
-    <Container size={420} my={40}>
-      <Title ta="center" style={{ fontWeight: 900 }}>
-        Welcome back!
-      </Title>
-      <Text color="dimmed" size="sm" ta="center" mt={5}>
-        Don't have an account yet?{' '}
-        <Anchor size="sm" component={Link} to="/register">
-          Create account
-        </Anchor>
-      </Text>
+    <AuthLayout
+      title="Welcome back!"
+      subtitle="Don't have an account yet?"
+      altCta={{ text: 'Create account', to: '/register' }}
+    >
+      {error && (
+        <Alert icon={<IconAlertCircle size={16} />} title="Error" color="red" mb="md">
+          {error}
+        </Alert>
+      )}
 
-      <Paper withBorder shadow="md" p={30} mt={30} radius="md">
-        {error && (
-          <Alert icon={<IconAlertCircle size={16} />} title="Error" color="red" mb="md">
-            {error}
-          </Alert>
-        )}
-
-        <form onSubmit={form.onSubmit(handleSubmit)}>
-          <TextInput
-            label="Email"
-            placeholder="you@example.com"
-            required
-            {...form.getInputProps('email')}
+      <form onSubmit={form.onSubmit(handleSubmit)}>
+        <TextInput
+          label="Email"
+          placeholder="you@example.com"
+          required
+          {...form.getInputProps('email')}
+        />
+        <PasswordInput
+          label="Password"
+          placeholder="Your password"
+          required
+          mt="md"
+          {...form.getInputProps('password')}
+        />
+        <Group justify="space-between" mt="lg">
+          <Checkbox
+            label="Remember me"
+            {...form.getInputProps('rememberMe', { type: 'checkbox' })}
           />
-          <PasswordInput
-            label="Password"
-            placeholder="Your password"
-            required
-            mt="md"
-            {...form.getInputProps('password')}
-          />
-          <Group justify="space-between" mt="lg">
-            <Checkbox
-              label="Remember me"
-              {...form.getInputProps('rememberMe', { type: 'checkbox' })}
-            />
-            <Anchor component={Link} to="/forgot-password" size="sm">
-              Forgot password?
-            </Anchor>
-          </Group>
-          <Button fullWidth mt="xl" type="submit" loading={loading}>
-            Sign in
-          </Button>
-        </form>
-
-        <Divider label="Or continue with" labelPosition="center" my="lg" />
-
-        <Group grow mb="md" mt="md">
-          <Button variant="default" leftSection={<IconBrandGithub size={16} />} onClick={() => handleSocialLogin('github')}>
-            GitHub
-          </Button>
-          <Button variant="default" leftSection={<IconBrandGoogle size={16} />} onClick={() => handleSocialLogin('google')}>
-            Google
-          </Button>
+          <Anchor component={Link} to="/forgot-password" size="sm">
+            Forgot password?
+          </Anchor>
         </Group>
-      </Paper>
-    </Container>
+        <Button fullWidth mt="xl" type="submit" loading={loading}>
+          Sign in
+        </Button>
+      </form>
+
+      <Divider label="Or continue with" labelPosition="center" my="lg" />
+
+      <Group grow mb="md" mt="md">
+        <Button variant="default" leftSection={<IconBrandGithub size={16} />} onClick={() => handleSocialLogin('github')}>
+          GitHub
+        </Button>
+        <Button variant="default" leftSection={<IconBrandGoogle size={16} />} onClick={() => handleSocialLogin('google')}>
+          Google
+        </Button>
+      </Group>
+    </AuthLayout>
   );
 }

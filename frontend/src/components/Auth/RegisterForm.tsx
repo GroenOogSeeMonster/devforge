@@ -18,6 +18,7 @@ import { useForm } from '@mantine/form';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { useNotifications } from '../../hooks/useNotifications';
+import { AuthLayout } from '../Layout/AuthLayout';
 
 interface RegisterFormValues {
   email: string;
@@ -117,94 +118,86 @@ export function RegisterForm() {
   };
 
   return (
-    <Container size={420} my={40}>
-      <Title ta="center" style={{ fontWeight: 900 }}>
-        Create your account
-      </Title>
-      <Text color="dimmed" size="sm" ta="center" mt={5}>
-        Already have an account?{' '}
-        <Anchor size="sm" component={Link} to="/login">
-          Sign in
-        </Anchor>
-      </Text>
+    <AuthLayout
+      title="Create your account"
+      subtitle="Already have an account?"
+      altCta={{ text: 'Sign in', to: '/login' }}
+    >
+      {error && (
+        <Alert icon={<IconAlertCircle size={16} />} title="Error" color="red" mb="md">
+          {error}
+        </Alert>
+      )}
 
-      <Paper withBorder shadow="md" p={30} mt={30} radius="md">
-        {error && (
-          <Alert icon={<IconAlertCircle size={16} />} title="Error" color="red" mb="md">
-            {error}
-          </Alert>
-        )}
-
-        <form onSubmit={form.onSubmit(handleSubmit)}>
-          <Group grow>
-            <TextInput
-              label="First Name"
-              placeholder="John"
-              required
-              {...form.getInputProps('firstName')}
-            />
-            <TextInput
-              label="Last Name"
-              placeholder="Doe"
-              required
-              {...form.getInputProps('lastName')}
-            />
-          </Group>
-          
+      <form onSubmit={form.onSubmit(handleSubmit)}>
+        <Group grow>
           <TextInput
-            label="Username"
-            placeholder="johndoe"
+            label="First Name"
+            placeholder="John"
             required
-            mt="md"
-            {...form.getInputProps('username')}
+            {...form.getInputProps('firstName')}
           />
-          
           <TextInput
-            label="Email"
-            placeholder="you@example.com"
+            label="Last Name"
+            placeholder="Doe"
             required
-            mt="md"
-            {...form.getInputProps('email')}
+            {...form.getInputProps('lastName')}
           />
-          
-          <PasswordInput
-            label="Password"
-            placeholder="Your password"
-            required
-            mt="md"
-            {...form.getInputProps('password')}
-          />
-          
-          <PasswordInput
-            label="Confirm Password"
-            placeholder="Confirm your password"
-            required
-            mt="md"
-            {...form.getInputProps('confirmPassword')}
-          />
-          
-          <Checkbox
-            label="I agree to the terms and conditions"
-            mt="lg"
-            {...form.getInputProps('agreeToTerms', { type: 'checkbox' })}
-          />
-          
-          <Button fullWidth mt="xl" type="submit" loading={loading}>
-            Create account
-          </Button>
-        </form>
-
-        <Divider label="Or continue with" labelPosition="center" my="lg" />
-
-        <Group grow mb="md" mt="md">
-          <Button variant="default" leftSection={<IconBrandGithub size={16} />} onClick={() => handleSocialRegister('github')}>
-            GitHub
-          </Button>
-          <Button variant="default" leftSection={<IconBrandGoogle size={16} />} onClick={() => handleSocialRegister('google')}>
-            Google
-          </Button>
         </Group>
-      </Paper>
-    </Container>
+        
+        <TextInput
+          label="Username"
+          placeholder="johndoe"
+          required
+          mt="md"
+          {...form.getInputProps('username')}
+        />
+        
+        <TextInput
+          label="Email"
+          placeholder="you@example.com"
+          required
+          mt="md"
+          {...form.getInputProps('email')}
+        />
+        
+        <PasswordInput
+          label="Password"
+          placeholder="Your password"
+          required
+          mt="md"
+          {...form.getInputProps('password')}
+        />
+        
+        <PasswordInput
+          label="Confirm Password"
+          placeholder="Confirm your password"
+          required
+          mt="md"
+          {...form.getInputProps('confirmPassword')}
+        />
+        
+        <Checkbox
+          label="I agree to the terms and conditions"
+          mt="lg"
+          {...form.getInputProps('agreeToTerms', { type: 'checkbox' })}
+        />
+        
+        <Button fullWidth mt="xl" type="submit" loading={loading}>
+          Create account
+        </Button>
+      </form>
+
+      <Divider label="Or continue with" labelPosition="center" my="lg" />
+
+      <Group grow mb="md" mt="md">
+        <Button variant="default" leftSection={<IconBrandGithub size={16} />} onClick={() => handleSocialRegister('github')}>
+          GitHub
+        </Button>
+        <Button variant="default" leftSection={<IconBrandGoogle size={16} />} onClick={() => handleSocialRegister('google')}>
+          Google
+        </Button>
+      </Group>
+    </AuthLayout>
   );
 }

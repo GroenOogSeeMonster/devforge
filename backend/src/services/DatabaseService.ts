@@ -146,9 +146,11 @@ export class DatabaseService {
   public async findOne<T extends QueryResultRow>(table: string, conditions: Record<string, any>): Promise<T | null> {
     const keys = Object.keys(conditions);
     const values = Object.values(conditions);
-    const placeholders = keys.map((_, index) => `$${index + 1}`).join(' AND ');
-    
-    const query = `SELECT * FROM ${table} WHERE ${placeholders} LIMIT 1`;
+    const whereClause = keys
+      .map((columnName, index) => `${columnName} = $${index + 1}`)
+      .join(' AND ');
+
+    const query = `SELECT * FROM ${table} WHERE ${whereClause} LIMIT 1`;
     const result = await this.query<T>(query, values);
     
     return result.rows[0] || null;
@@ -166,8 +168,10 @@ export class DatabaseService {
 
     if (conditions && Object.keys(conditions).length > 0) {
       const keys = Object.keys(conditions);
-      const placeholders = keys.map(() => `$${paramIndex++}`).join(' AND ');
-      query += ` WHERE ${placeholders}`;
+      const whereClause = keys
+        .map((columnName) => `${columnName} = $${paramIndex++}`)
+        .join(' AND ');
+      query += ` WHERE ${whereClause}`;
       values.push(...Object.values(conditions));
     }
 
@@ -225,8 +229,10 @@ export class DatabaseService {
 
     if (conditions && Object.keys(conditions).length > 0) {
       const keys = Object.keys(conditions);
-      const placeholders = keys.map((_, index) => `$${index + 1}`).join(' AND ');
-      query += ` WHERE ${placeholders}`;
+      const whereClause = keys
+        .map((columnName, index) => `${columnName} = $${index + 1}`)
+        .join(' AND ');
+      query += ` WHERE ${whereClause}`;
       values.push(...Object.values(conditions));
     }
 

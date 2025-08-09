@@ -255,8 +255,11 @@ router.post('/refresh',
     }
 
     try {
-      // Verify refresh token
-    const decoded: any = require('jsonwebtoken').verify(refreshToken, process.env['JWT_SECRET']!);
+      // Verify refresh token using central config secret for consistency
+      const decoded: any = require('jsonwebtoken').verify(
+        refreshToken,
+        (require('@config/config') as any).config.auth.jwtSecret
+      );
       
       // Check if refresh token exists in Redis
       const storedToken = await redisService.get(`refresh_token:${decoded.userId}`);

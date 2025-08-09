@@ -14,6 +14,7 @@ import { useForm } from '@mantine/form';
 import { Link, useSearchParams } from 'react-router-dom';
 import { authAPI } from '../../services/api';
 import { useNotifications } from '../../hooks/useNotifications';
+import { AuthLayout } from '../Layout/AuthLayout';
 
 interface ResetPasswordFormValues {
   password: string;
@@ -78,109 +79,74 @@ export function ResetPasswordForm() {
 
   if (!token) {
     return (
-      <Container size={420} my={40}>
-        <Title ta="center" style={{ fontWeight: 900 }}>
-          Invalid reset link
-        </Title>
-        <Text color="dimmed" size="sm" ta="center" mt={5}>
-          The password reset link is invalid or has expired
-        </Text>
-
-        <Paper withBorder shadow="md" p={30} mt={30} radius="md">
-          <Alert icon={<IconAlertCircle size={16} />} title="Invalid token" color="red" mb="md">
-            The password reset link is invalid or has expired. Please request a new password reset link.
-          </Alert>
-          
-          <Button
-            fullWidth
-            component={Link}
-            to="/forgot-password"
-          >
-            Request new reset link
-          </Button>
-          
-          <Text size="sm" color="dimmed" ta="center" mt="lg">
-            Remember your password?{' '}
-            <Anchor size="sm" component={Link} to="/login">
-              Sign in
-            </Anchor>
-          </Text>
-        </Paper>
-      </Container>
-    );
-  }
-
-  if (success) {
-    return (
-      <Container size={420} my={40}>
-        <Title ta="center" style={{ fontWeight: 900 }}>
-          Password reset successful
-        </Title>
-        <Text color="dimmed" size="sm" ta="center" mt={5}>
-          Your password has been reset successfully
-        </Text>
-
-        <Paper withBorder shadow="md" p={30} mt={30} radius="md">
-          <Alert icon={<IconCheck size={16} />} title="Success" color="green" mb="md">
-            Your password has been reset successfully. You can now log in with your new password.
-          </Alert>
-          
-          <Button
-            fullWidth
-            component={Link}
-            to="/login"
-          >
-            Sign in
-          </Button>
-        </Paper>
-      </Container>
-    );
-  }
-
-  return (
-    <Container size={420} my={40}>
-      <Title ta="center" style={{ fontWeight: 900 }}>
-        Reset your password
-      </Title>
-      <Text color="dimmed" size="sm" ta="center" mt={5}>
-        Enter your new password below
-      </Text>
-
-      <Paper withBorder shadow="md" p={30} mt={30} radius="md">
-        {error && (
-          <Alert icon={<IconAlertCircle size={16} />} title="Error" color="red" mb="md">
-            {error}
-          </Alert>
-        )}
-
-        <form onSubmit={form.onSubmit(handleSubmit)}>
-          <PasswordInput
-            label="New Password"
-            placeholder="Your new password"
-            required
-            {...form.getInputProps('password')}
-          />
-          
-          <PasswordInput
-            label="Confirm New Password"
-            placeholder="Confirm your new password"
-            required
-            mt="md"
-            {...form.getInputProps('confirmPassword')}
-          />
-          
-          <Button fullWidth mt="xl" type="submit" loading={loading}>
-            Reset password
-          </Button>
-        </form>
-
-        <Text size="sm" color="dimmed" ta="center" mt="lg">
+      <AuthLayout title="Invalid reset link">
+        <Alert icon={<IconAlertCircle size={16} />} title="Invalid token" color="red" mb="md">
+          The password reset link is invalid or has expired. Please request a new password reset link.
+        </Alert>
+        
+        <Button fullWidth component={Link} to="/forgot-password">
+          Request new reset link
+        </Button>
+        
+        <Text size="sm" c="dimmed" ta="center" mt="lg">
           Remember your password?{' '}
           <Anchor size="sm" component={Link} to="/login">
             Sign in
           </Anchor>
         </Text>
-      </Paper>
-    </Container>
+      </AuthLayout>
+    );
+  }
+
+  if (success) {
+    return (
+      <AuthLayout title="Password reset successful">
+        <Alert icon={<IconCheck size={16} />} title="Success" color="green" mb="md">
+          Your password has been reset successfully. You can now log in with your new password.
+        </Alert>
+        
+        <Button fullWidth component={Link} to="/login">
+          Sign in
+        </Button>
+      </AuthLayout>
+    );
+  }
+
+  return (
+    <AuthLayout title="Reset your password" subtitle="Enter your new password below">
+      {error && (
+        <Alert icon={<IconAlertCircle size={16} />} title="Error" color="red" mb="md">
+          {error}
+        </Alert>
+      )}
+
+      <form onSubmit={form.onSubmit(handleSubmit)}>
+        <PasswordInput
+          label="New Password"
+          placeholder="Your new password"
+          required
+          {...form.getInputProps('password')}
+        />
+        
+        <PasswordInput
+          label="Confirm New Password"
+          placeholder="Confirm your new password"
+          required
+          mt="md"
+          {...form.getInputProps('confirmPassword')}
+        />
+        
+        <Button fullWidth mt="xl" type="submit" loading={loading}>
+          Reset password
+        </Button>
+      </form>
+
+      <Text size="sm" c="dimmed" ta="center" mt="lg">
+        Remember your password?{' '}
+        <Anchor size="sm" component={Link} to="/login">
+          Sign in
+        </Anchor>
+      </Text>
+    </AuthLayout>
   );
 }

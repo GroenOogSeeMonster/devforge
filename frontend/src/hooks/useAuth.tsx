@@ -75,10 +75,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const login = async (email: string, password: string) => {
     try {
       const response = await api.post('/auth/login', { email, password });
-      const { user: userData, token: authToken } = response.data.data;
+      const { user: userData, token: authToken, refreshToken } = response.data.data;
 
       // Store token and user data
       localStorage.setItem('token', authToken);
+      if (refreshToken) {
+        localStorage.setItem('refreshToken', refreshToken);
+      }
       localStorage.setItem('user', JSON.stringify(userData));
       
       // Set token in API headers
@@ -94,10 +97,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const register = async (userData: RegisterData) => {
     try {
       const response = await api.post('/auth/register', userData);
-      const { user: newUser, token: authToken } = response.data.data;
+      const { user: newUser, token: authToken, refreshToken } = response.data.data;
 
       // Store token and user data
       localStorage.setItem('token', authToken);
+      if (refreshToken) {
+        localStorage.setItem('refreshToken', refreshToken);
+      }
       localStorage.setItem('user', JSON.stringify(newUser));
       
       // Set token in API headers
@@ -126,6 +132,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // Clear local storage and state
       localStorage.removeItem('token');
       localStorage.removeItem('user');
+      localStorage.removeItem('refreshToken');
       delete api.defaults.headers.common['Authorization'];
       
       setUser(null);

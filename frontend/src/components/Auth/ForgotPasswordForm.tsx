@@ -14,6 +14,7 @@ import { useForm } from '@mantine/form';
 import { Link } from 'react-router-dom';
 import { authAPI } from '../../services/api';
 import { useNotifications } from '../../hooks/useNotifications';
+import { AuthLayout } from '../Layout/AuthLayout';
 
 interface ForgotPasswordFormValues {
   email: string;
@@ -63,75 +64,52 @@ export function ForgotPasswordForm() {
 
   if (success) {
     return (
-      <Container size={420} my={40}>
-        <Title ta="center" style={{ fontWeight: 900 }}>
-          Check your email
-        </Title>
-        <Text color="dimmed" size="sm" ta="center" mt={5}>
-          We've sent you a password reset link
+      <AuthLayout title="Check your email">
+        <Alert icon={<IconCheck size={16} />} title="Email sent" color="green" mb="md">
+          If an account with that email exists, we've sent a password reset link to your email address.
+        </Alert>
+        
+        <Text size="sm" c="dimmed" ta="center" mb="lg">
+          Didn't receive the email? Check your spam folder or{' '}
+          <Anchor size="sm" component={Link} to="/forgot-password">
+            try again
+          </Anchor>
         </Text>
-
-        <Paper withBorder shadow="md" p={30} mt={30} radius="md">
-          <Alert icon={<IconCheck size={16} />} title="Email sent" color="green" mb="md">
-            If an account with that email exists, we've sent a password reset link to your email address.
-          </Alert>
-          
-          <Text size="sm" color="dimmed" ta="center" mb="lg">
-            Didn't receive the email? Check your spam folder or{' '}
-            <Anchor size="sm" component={Link} to="/forgot-password">
-              try again
-            </Anchor>
-          </Text>
-          
-          <Button
-            fullWidth
-            variant="subtle"
-            component={Link}
-            to="/login"
-          >
-            Back to login
-          </Button>
-        </Paper>
-      </Container>
+        
+        <Button fullWidth variant="subtle" component={Link} to="/login">
+          Back to login
+        </Button>
+      </AuthLayout>
     );
   }
 
   return (
-    <Container size={420} my={40}>
-      <Title ta="center" style={{ fontWeight: 900 }}>
-        Forgot your password?
-      </Title>
-      <Text color="dimmed" size="sm" ta="center" mt={5}>
-        Enter your email address and we'll send you a reset link
+    <AuthLayout title="Forgot your password?" subtitle="Enter your email address and we'll send you a reset link">
+      {error && (
+        <Alert icon={<IconAlertCircle size={16} />} title="Error" color="red" mb="md">
+          {error}
+        </Alert>
+      )}
+
+      <form onSubmit={form.onSubmit(handleSubmit)}>
+        <TextInput
+          label="Email"
+          placeholder="you@example.com"
+          required
+          {...form.getInputProps('email')}
+        />
+        
+        <Button fullWidth mt="xl" type="submit" loading={loading}>
+          Send reset link
+        </Button>
+      </form>
+
+      <Text size="sm" c="dimmed" ta="center" mt="lg">
+        Remember your password?{' '}
+        <Anchor size="sm" component={Link} to="/login">
+          Sign in
+        </Anchor>
       </Text>
-
-      <Paper withBorder shadow="md" p={30} mt={30} radius="md">
-        {error && (
-          <Alert icon={<IconAlertCircle size={16} />} title="Error" color="red" mb="md">
-            {error}
-          </Alert>
-        )}
-
-        <form onSubmit={form.onSubmit(handleSubmit)}>
-          <TextInput
-            label="Email"
-            placeholder="you@example.com"
-            required
-            {...form.getInputProps('email')}
-          />
-          
-          <Button fullWidth mt="xl" type="submit" loading={loading}>
-            Send reset link
-          </Button>
-        </form>
-
-        <Text size="sm" color="dimmed" ta="center" mt="lg">
-          Remember your password?{' '}
-          <Anchor size="sm" component={Link} to="/login">
-            Sign in
-          </Anchor>
-        </Text>
-      </Paper>
-    </Container>
+    </AuthLayout>
   );
 }
