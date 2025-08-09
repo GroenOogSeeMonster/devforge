@@ -1,0 +1,24 @@
+{
+  admin off
+  log {
+    output stdout
+  }
+}
+
+{$DOMAIN} {
+  encode zstd gzip
+  tls {$TLS_EMAIL}
+
+  @api path /api* /swagger* /health*
+  reverse_proxy @api backend:3001
+
+  # Socket.IO / WebSockets
+  @socket path /socket.io*
+  reverse_proxy @socket backend:3001
+
+  route {
+    reverse_proxy frontend:80
+  }
+}
+
+

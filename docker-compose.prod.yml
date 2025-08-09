@@ -1,0 +1,96 @@
+version: '3.9'
+
+name: devforge
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-devforge}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-devforge}
+      POSTGRES_DB: ${POSTGRES_DB:-devforge}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql:ro
+    networks:
+      - internal
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis_data:/data
+    networks:
+      - internal
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: production
+      POSTGRES_URL: postgres://${POSTGRES_USER:-devforge}:${POSTGRES_PASSWORD:-devforge}@postgres:5432/${POSTGRES_DB:-devforge}
+      REDIS_URL: redis://redis:6379
+      API_PORT: 3001
+      CORS_ORIGIN: https://${DOMAIN}
+      LOG_LEVEL: info
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - storage_data:/app/storage
+    networks:
+      - internal
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - VITE_API_URL=https://${DOMAIN}/api
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      VITE_API_URL: https://${DOMAIN}/api
+    networks:
+      - internal
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      DOMAIN: ${DOMAIN}
+      TLS_EMAIL: ${TLS_EMAIL}
+    volumes:
+      - ./deploy/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - internal
+      - web
+
+networks:
+  internal:
+    driver: bridge
+  web:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  redis_data:
+  caddy_data:
+  caddy_config:
+  storage_data:
+
+

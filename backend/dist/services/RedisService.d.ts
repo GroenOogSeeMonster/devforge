@@ -1,0 +1,46 @@
+import { RedisClientType } from 'redis';
+export declare class RedisService {
+    private static instance;
+    private client;
+    private isInitialized;
+    private constructor();
+    static getInstance(): RedisService;
+    initialize(): Promise<void>;
+    getClient(): RedisClientType;
+    close(): Promise<void>;
+    healthCheck(): Promise<boolean>;
+    get<T>(key: string): Promise<T | null>;
+    set(key: string, value: any, ttl?: number): Promise<void>;
+    del(key: string): Promise<void>;
+    exists(key: string): Promise<boolean>;
+    expire(key: string, ttl: number): Promise<void>;
+    hget(key: string, field: string): Promise<string | null>;
+    hset(key: string, field: string, value: string): Promise<void>;
+    hgetall(key: string): Promise<Record<string, string>>;
+    hdel(key: string, field: string): Promise<void>;
+    lpush(key: string, value: string): Promise<void>;
+    rpush(key: string, value: string): Promise<void>;
+    lpop(key: string): Promise<string | null>;
+    rpop(key: string): Promise<string | null>;
+    lrange(key: string, start: number, stop: number): Promise<string[]>;
+    sadd(key: string, member: string): Promise<void>;
+    srem(key: string, member: string): Promise<void>;
+    smembers(key: string): Promise<string[]>;
+    sismember(key: string, member: string): Promise<boolean>;
+    setSession(sessionId: string, data: any, ttl?: number): Promise<void>;
+    getSession(sessionId: string): Promise<any | null>;
+    deleteSession(sessionId: string): Promise<void>;
+    incrementRateLimit(key: string, window: number): Promise<number>;
+    getRateLimit(key: string): Promise<number>;
+    publish(channel: string, message: string): Promise<number>;
+    subscribe(channel: string, callback: (message: string) => void): Promise<void>;
+    unsubscribe(channel: string): Promise<void>;
+    flushdb(): Promise<void>;
+    info(): Promise<Record<string, string>>;
+}
+export declare const redisService: RedisService;
+export declare const initialize: () => Promise<void>;
+export declare const close: () => Promise<void>;
+export declare const getClient: () => RedisClientType;
+export declare const healthCheck: () => Promise<boolean>;
+//# sourceMappingURL=RedisService.d.ts.map

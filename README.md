@@ -57,9 +57,9 @@
    ./scripts/setup.sh
    ```
 
-4. **Start the application**
+4. **Start the application (development)**
    ```bash
-   docker-compose up -d
+   docker compose up -d
    ```
 
 5. **Access DevForge**
@@ -222,27 +222,71 @@ npm run test:all
 
 ## 🚀 Deployment
 
-### Production Deployment
+### Production (Ubuntu with docker compose + HTTPS)
 
-1. **Prepare production environment**
+The production stack uses Caddy for automatic HTTPS, and runs Postgres, Redis, backend, and frontend.
+
+1. Install Docker and compose plugin
    ```bash
-   export NODE_ENV=production
-   export SSL_ENABLED=true
-   export DOMAIN=your-domain.com
+   curl -fsSL https://get.docker.com | sh
+   sudo usermod -aG docker $USER
+   newgrp docker
    ```
 
-2. **Build and deploy**
+2. Clone repo and create env
    ```bash
-   docker-compose -f docker-compose.prod.yml up -d
+   git clone https://github.com/devforge/devforge.git
+   cd devforge
+   cp .env.example .env
+   # IMPORTANT: set strong secrets before first run
+   # JWT_SECRET, SESSION_SECRET, ENCRYPTION_KEY must be non-default values
+   sed -i 's|your-super-secret-jwt-key-change-this-in-production|'"$(openssl rand -hex 32)"'|g' .env || true
+   sed -i 's|your-session-secret-key-change-this-in-production|'"$(openssl rand -hex 32)"'|g' .env || true
+   sed -i 's|your-32-character-encryption-key|'"$(openssl rand -hex 32)"'|g' .env || true
    ```
 
-3. **Configure reverse proxy (Nginx)**
+3. Set domain and email for certificates
    ```bash
-   # Copy nginx configuration
-   cp docker/nginx/nginx.conf /etc/nginx/sites-available/devforge
-   sudo ln -s /etc/nginx/sites-available/devforge /etc/nginx/sites-enabled/
-   sudo systemctl reload nginx
+   export DOMAIN=devforge.example.com
+   export TLS_EMAIL=admin@example.com
    ```
+
+4. Bring up the stack
+   ```bash
+   make up
+   # or: DOMAIN=$DOMAIN TLS_EMAIL=$TLS_EMAIL docker compose -f docker-compose.prod.yml up -d --build
+   ```
+
+5. Optional: enable auto-start at boot
+   ```bash
+   sudo cp deploy/systemd/devforge.service /etc/systemd/system/
+   sudo systemctl daemon-reload
+   sudo systemctl enable devforge
+   sudo systemctl start devforge
+   ```
+
+6. Verify
+   ```bash
+   make ps
+   make logs
+   ```
+
+Access the app at: https://$DOMAIN
+
+Backup and restore:
+```bash
+# Backup to ./backups
+make backup
+
+# Restore from a specific backup directory
+make restore DIR=./backups/devforge-YYYYMMDD-HHMMSS
+```
+
+Bootstrap (non-interactive) on Ubuntu:
+```bash
+sudo DOMAIN=devforge.example.com TLS_EMAIL=admin@example.com REPO_URL=https://github.com/devforge/devforge.git \
+  bash deploy/bootstrap-ubuntu.sh
+```
 
 ### Kubernetes Deployment
 ```bash

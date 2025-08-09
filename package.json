@@ -1,0 +1,69 @@
+{
+  "name": "devforge",
+  "version": "1.0.0",
+  "description": "A complete open-source, self-hosted alternative to Replit with AI-powered development capabilities",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "backend",
+    "services/*"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\" \"npm run dev:services\"",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:services": "concurrently \"cd services/ai-assistant && npm run dev\" \"cd services/workspace-manager && npm run dev\" \"cd services/database-provisioner && npm run dev\" \"cd services/realtime-server && npm run dev\"",
+    "build": "npm run build:frontend && npm run build:backend && npm run build:services",
+    "build:frontend": "cd frontend && npm run build",
+    "build:backend": "cd backend && npm run build",
+    "build:services": "npm run build --workspaces",
+    "test": "npm run test:unit && npm run test:integration && npm run test:e2e",
+    "test:unit": "npm run test:unit --workspaces",
+    "test:integration": "npm run test:integration --workspaces",
+    "test:e2e": "cd tests/e2e && npm test",
+    "lint": "npm run lint --workspaces",
+    "lint:fix": "npm run lint:fix --workspaces",
+    "docker:build": "docker-compose build",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f",
+    "setup": "./scripts/setup.sh",
+    "clean": "npm run clean --workspaces && rm -rf node_modules",
+    "install:all": "npm install && npm run install:workspaces",
+    "install:workspaces": "npm install --workspaces"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "concurrently": "^8.2.2",
+    "typescript": "^5.3.0",
+    "prettier": "^3.1.0",
+    "eslint": "^8.55.0",
+    "@typescript-eslint/eslint-plugin": "^6.13.0",
+    "@typescript-eslint/parser": "^6.13.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "keywords": [
+    "replit",
+    "alternative",
+    "self-hosted",
+    "code-editor",
+    "ai-assistant",
+    "collaboration",
+    "development",
+    "docker",
+    "microservices"
+  ],
+  "author": "DevForge Community",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/devforge/devforge.git"
+  },
+  "bugs": {
+    "url": "https://github.com/devforge/devforge/issues"
+  },
+  "homepage": "https://github.com/devforge/devforge#readme"
+} 
