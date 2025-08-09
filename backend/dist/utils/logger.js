@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.apiLog = exports.databaseLog = exports.performanceLog = exports.securityLog = exports.auditLog = exports.logger = void 0;
 const winston_1 = __importDefault(require("winston"));
 const winston_daily_rotate_file_1 = __importDefault(require("winston-daily-rotate-file"));
-const config_1 = require("@config/config");
+const config_1 = require("../config/config");
 const logFormat = winston_1.default.format.combine(winston_1.default.format.timestamp({
     format: 'YYYY-MM-DD HH:mm:ss'
 }), winston_1.default.format.errors({ stack: true }), winston_1.default.format.json(), winston_1.default.format.printf(({ timestamp, level, message, stack, ...meta }) => {

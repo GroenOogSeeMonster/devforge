@@ -2,8 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getStats = exports.healthCheck = exports.transaction = exports.query = exports.close = exports.initialize = exports.databaseService = exports.DatabaseService = void 0;
 const pg_1 = require("pg");
-const config_1 = require("@config/config");
-const logger_1 = require("@utils/logger");
+const config_1 = require("../config/config");
+const logger_1 = require("../utils/logger");
 class DatabaseService {
     constructor() {
         this.pool = null;

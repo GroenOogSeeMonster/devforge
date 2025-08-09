@@ -7,10 +7,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.comparePassword = exports.hashPassword = exports.generateRefreshToken = exports.generateToken = exports.verifyToken = exports.logout = exports.rateLimit = exports.requireProjectAccess = exports.requireUserOrAdmin = exports.requireAdmin = exports.requireRole = exports.optionalAuth = exports.authenticate = exports.AuthMiddleware = void 0;
 const jsonwebtoken_1 = require("jsonwebtoken");
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
-const config_1 = require("@config/config");
-const logger_1 = require("@utils/logger");
-const DatabaseService_1 = require("@services/DatabaseService");
-const RedisService_1 = require("@services/RedisService");
+const config_1 = require("../config/config");
+const logger_1 = require("../utils/logger");
+const DatabaseService_1 = require("../services/DatabaseService");
+const RedisService_1 = require("../services/RedisService");
 class AuthMiddleware {
     static async verifyToken(token) {
         try {

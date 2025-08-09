@@ -11,14 +11,14 @@ const helmet_1 = __importDefault(require("helmet"));
 const compression_1 = __importDefault(require("compression"));
 const morgan_1 = __importDefault(require("morgan"));
 const socket_io_1 = require("socket.io");
-const config_1 = require("@config/config");
-const logger_1 = require("@utils/logger");
-const errorHandler_1 = require("@middleware/errorHandler");
-const authMiddleware_1 = require("@middleware/authMiddleware");
-const authRoutes_1 = require("@routes/authRoutes");
-const healthRoutes_1 = require("@routes/healthRoutes");
-const DatabaseService_1 = require("@services/DatabaseService");
-const RedisService_1 = require("@services/RedisService");
+const config_1 = require("./config/config");
+const logger_1 = require("./utils/logger");
+const errorHandler_1 = require("./middleware/errorHandler");
+const authMiddleware_1 = require("./middleware/authMiddleware");
+const authRoutes_1 = require("./routes/authRoutes");
+const healthRoutes_1 = require("./routes/healthRoutes");
+const DatabaseService_1 = require("./services/DatabaseService");
+const RedisService_1 = require("./services/RedisService");
 class DevForgeServer {
     constructor() {
         this.port = config_1.config.port;

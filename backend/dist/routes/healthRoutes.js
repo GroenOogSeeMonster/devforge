@@ -2,11 +2,11 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.healthRoutes = void 0;
 const express_1 = require("express");
-const DatabaseService_1 = require("@services/DatabaseService");
-const RedisService_1 = require("@services/RedisService");
-const logger_1 = require("@utils/logger");
-const errorHandler_1 = require("@middleware/errorHandler");
-const config_1 = require("@config/config");
+const DatabaseService_1 = require("../services/DatabaseService");
+const RedisService_1 = require("../services/RedisService");
+const logger_1 = require("../utils/logger");
+const errorHandler_1 = require("../middleware/errorHandler");
+const config_1 = require("../config/config");
 const router = (0, express_1.Router)();
 exports.healthRoutes = router;
 router.get('/', (0, errorHandler_1.asyncHandler)(async (_req, res) => {
