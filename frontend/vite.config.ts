@@ -70,7 +70,7 @@ export default defineConfig({
         secure: false
       },
       '/socket.io': {
-        target: 'ws://localhost:3002',
+        target: 'ws://localhost:3001',
         ws: true
       }
     }

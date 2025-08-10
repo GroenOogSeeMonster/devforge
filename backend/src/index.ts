@@ -64,12 +64,19 @@ class DevForgeServer {
       await redisService.initialize();
       logger.info('Redis connection established');
 
-      // Setup Socket.IO Redis adapter
-      // Lazy import to avoid test-time resolution
-      const { createAdapter } = require('@socket.io/redis-adapter');
-      const pubClient = redisService.getClient();
-      const subClient = pubClient.duplicate();
-      this.io.adapter(createAdapter(pubClient, subClient));
+      // Setup Socket.IO Redis adapter (best-effort; falls back to in-memory)
+      try {
+        const { createAdapter } = require('@socket.io/redis-adapter');
+        const pubClient = redisService.getClient();
+        const subClient = pubClient.duplicate();
+        await subClient.connect();
+        this.io.adapter(createAdapter(pubClient, subClient));
+        logger.info('Socket.IO Redis adapter enabled');
+      } catch (adapterError) {
+        logger.warn('Socket.IO Redis adapter not enabled; using in-memory adapter', {
+          error: adapterError instanceof Error ? adapterError.message : String(adapterError),
+        });
+      }
 
       logger.info('All services initialized successfully');
     } catch (error) {

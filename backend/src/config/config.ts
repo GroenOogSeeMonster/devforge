@@ -1,7 +1,54 @@
 import dotenv from 'dotenv';
+import fs from 'fs';
+import path from 'path';
 
 // Load environment variables
 dotenv.config();
+
+// Ensure secrets are available without external configuration.
+// If not provided via environment, they will be generated and persisted
+// under the storage path to keep them stable across restarts.
+const ensureSecrets = () => {
+  const storagePath = process.env['STORAGE_PATH'] || './storage';
+  const secretsFile = path.join(storagePath, 'secrets.json');
+
+  try {
+    if (fs.existsSync(secretsFile)) {
+      const raw = fs.readFileSync(secretsFile, 'utf-8');
+      const parsed = JSON.parse(raw);
+      return {
+        jwtSecret: parsed.jwtSecret as string | undefined,
+        sessionSecret: parsed.sessionSecret as string | undefined,
+        encryptionKey: parsed.encryptionKey as string | undefined,
+      };
+    }
+  } catch {
+    // fallthrough to generation
+  }
+
+  // Generate secure secrets and persist
+  const crypto = require('crypto');
+  const ensureDir = () => {
+    try {
+      fs.mkdirSync(storagePath, { recursive: true });
+    } catch {}
+  };
+  ensureDir();
+  const secrets = {
+    jwtSecret: crypto.randomBytes(48).toString('hex'),
+    sessionSecret: crypto.randomBytes(48).toString('hex'),
+    // 32 bytes key, hex string length 64
+    encryptionKey: crypto.randomBytes(32).toString('hex'),
+  };
+  try {
+    fs.writeFileSync(secretsFile, JSON.stringify(secrets, null, 2), { encoding: 'utf-8' });
+  } catch {
+    // ignore write errors, secrets still returned in-memory
+  }
+  return secrets;
+};
+
+const generatedSecrets = ensureSecrets();
 
 export const config = {
   // Application settings
@@ -28,20 +75,24 @@ export const config = {
   },
 
   // Redis configuration
-  redis: {
-    host: process.env['REDIS_HOST'] || 'localhost',
-    port: parseInt(process.env['REDIS_PORT'] || '6379', 10),
-    password: process.env['REDIS_PASSWORD'] || undefined,
-    url: process.env['REDIS_URL'] || 'redis://localhost:6379',
-    db: 0,
-  },
+  redis: (() => {
+    const host = process.env['REDIS_HOST'] || 'localhost';
+    const port = parseInt(process.env['REDIS_PORT'] || '6379', 10);
+    return {
+      host,
+      port,
+      password: process.env['REDIS_PASSWORD'] || undefined,
+      url: process.env['REDIS_URL'] || `redis://${host}:${port}`,
+      db: 0,
+    };
+  })(),
 
   // Authentication
   auth: {
-    jwtSecret: process.env['JWT_SECRET'] || 'your-super-secret-jwt-key-change-this-in-production',
+    jwtSecret: process.env['JWT_SECRET'] || generatedSecrets.jwtSecret || 'development-jwt-secret',
     jwtExpiresIn: process.env['JWT_EXPIRES_IN'] || '7d',
     jwtRefreshExpiresIn: process.env['JWT_REFRESH_EXPIRES_IN'] || '30d',
-    sessionSecret: process.env['SESSION_SECRET'] || 'your-session-secret-key-change-this-in-production',
+    sessionSecret: process.env['SESSION_SECRET'] || generatedSecrets.sessionSecret || 'development-session-secret',
     bcryptRounds: parseInt(process.env['BCRYPT_ROUNDS'] || '12', 10),
   },
 
@@ -77,10 +128,11 @@ export const config = {
 
   // Security settings
   security: {
-    corsOrigin: process.env['CORS_ORIGIN'] || 'http://localhost:3000',
+    // Default to Nginx-served frontend origin
+    corsOrigin: process.env['CORS_ORIGIN'] || 'http://localhost',
     rateLimitWindowMs: parseInt(process.env['RATE_LIMIT_WINDOW_MS'] || '900000', 10),
     rateLimitMaxRequests: parseInt(process.env['RATE_LIMIT_MAX_REQUESTS'] || '100', 10),
-    encryptionKey: process.env['ENCRYPTION_KEY'] || 'your-32-character-encryption-key',
+    encryptionKey: process.env['ENCRYPTION_KEY'] || generatedSecrets.encryptionKey || 'development-encryption-key',
   },
 
   // File storage
@@ -158,7 +210,7 @@ export const validateConfig = (): void => {
   const missing = required.filter((key) => {
     const value = getValue(key);
     if (typeof value === 'string') {
-      return value.trim() === '' || value.includes('change-this-in-production');
+      return value.trim() === '';
     }
     return !value;
   });

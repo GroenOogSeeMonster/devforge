@@ -2,7 +2,8 @@ import axios, { AxiosInstance, AxiosResponse, InternalAxiosRequestConfig } from 
 
 // Create axios instance
 export const api: AxiosInstance = axios.create({
-  baseURL: (import.meta as any).env?.VITE_API_URL || 'http://localhost:3001/api',
+  // Prefer relative path so the reverse proxy routes correctly in any env
+  baseURL: (import.meta as any).env?.VITE_API_URL || '/api',
   timeout: 30000,
   headers: {
     'Content-Type': 'application/json',
@@ -41,7 +42,7 @@ api.interceptors.response.use(
         const refreshToken = localStorage.getItem('refreshToken');
         if (refreshToken) {
           const response = await axios.post(
-            `${(import.meta as any).env?.VITE_API_URL || 'http://localhost:3001/api'}/auth/refresh`,
+            `${(import.meta as any).env?.VITE_API_URL || '/api'}/auth/refresh`,
             { refreshToken }
           );
 

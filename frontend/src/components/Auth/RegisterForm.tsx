@@ -3,11 +3,6 @@ import {
   TextInput,
   PasswordInput,
   Checkbox,
-  Anchor,
-  Paper,
-  Title,
-  Text,
-  Container,
   Button,
   Group,
   Divider,
@@ -15,7 +10,7 @@ import {
 } from '@mantine/core';
 import { IconAlertCircle, IconBrandGithub, IconBrandGoogle } from '@tabler/icons-react';
 import { useForm } from '@mantine/form';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { useNotifications } from '../../hooks/useNotifications';
 import { AuthLayout } from '../Layout/AuthLayout';
